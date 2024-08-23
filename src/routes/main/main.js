@@ -1,12 +1,16 @@
 // src/routes/main/main.js
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import { instance } from "../../api/instance";
 const Container = styled.div`
   padding: 20px;
   padding-left: 40px;
   padding-right: 40px;
+  /* background-image: url("/sparkles.png");
+  background-size: cover;
+  width: 100%;
+  height: 100%; */
 `;
 
 const Tabs = styled.div`
@@ -57,14 +61,14 @@ const University = styled.div`
 
 const WriteButton = styled.button`
   padding: 10px 20px;
-  background-color: #5E5CE6;
+  background-color: #5e5ce6;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #4D4BCF;
+    background-color: #4d4bcf;
   }
 `;
 
@@ -156,14 +160,35 @@ const HeartIcon = styled.span`
 
 const Main = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("전체보기");
-
+  const [posts, setPosts] = useState();
+  const [filteredPosts, setFilteredPosts] = useState();
+  const [naviLocation, setNaviLocation] = useState();
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
-  
-  const posts = [
+  useEffect(() => {
+    const pathname = location.pathname.split("/")[1];
+    setNaviLocation(pathname);
+    const fetchData = async () => {
+      try {
+        const res = await instance.post(`api/auth/login`, {
+          name: "별별",
+          email: "byul88byul@gmail.com",
+          uid: "3jljlkjflkjklafjljl3j2lj3",
+        });
+        console.log(res);
+      } catch (e) {
+        console.error(e);
+      } finally {
+      }
+    };
+    fetchData();
+  }, [location, posts]);
+  const testPosts = [
     {
       id: 1,
-      title: "Study Post 1: This is a very long title that will be displayed in two lines",
+      title:
+        "Study Post 1: This is a very long title that will be displayed in two lines",
       category: "스터디",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-3",
@@ -175,7 +200,8 @@ const Main = () => {
     },
     {
       id: 2,
-      title: "Culture Post 1: Another example of a long title that needs to be truncated",
+      title:
+        "Culture Post 1: Another example of a long title that needs to be truncated",
       category: "문화",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-10",
@@ -235,7 +261,8 @@ const Main = () => {
     },
     {
       id: 7,
-      title: "Culture Post 2: A deep dive into the history and culture of the region",
+      title:
+        "Culture Post 2: A deep dive into the history and culture of the region",
       category: "문화",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-4",
@@ -259,17 +286,20 @@ const Main = () => {
     },
   ];
 
-  const filteredPosts = activeTab === "전체보기"
-    ? posts
-    : posts.filter(post => post.category === activeTab);
-
+  useEffect(() => {
+    const filtered =
+      activeTab === "전체보기"
+        ? posts
+        : posts.filter((post) => post.category === activeTab);
+    setFilteredPosts(filtered);
+  }, [posts]);
   const handlePostClick = (id) => {
     navigate(`/main/post/${id}`);
   };
 
-    const handleWriteClick = () => {
-        navigate("/post");
-    }
+  const handleWriteClick = () => {
+    navigate("/post");
+  };
 
   return (
     <Container>
@@ -294,7 +324,7 @@ const Main = () => {
       </InfoBar>
 
       <PostList>
-        {filteredPosts.map((post) => (
+        {filteredPosts?.map((post) => (
           <Post key={post.id} onClick={() => handlePostClick(post.id)}>
             <PostImage src={post.imageUrl} alt={post.title} />
             <PostDetails>
