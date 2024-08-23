@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import img1 from "../../../src/assets/images/Rectangle10.jpg";
+import img2 from "../../../src/assets/images/Rectangle11.jpg";
+import img3 from "../../../src/assets/images/Rectangle12.jpg";
+import img4 from "../../../src/assets/images/Rectangle13.jpg";
 
 const Container = styled.div`
   padding: 20px;
@@ -26,7 +30,7 @@ const Header = styled.div`
 const Button = styled.button`
   margin-left: 10px;
   padding: 8px 16px;
-  background-color: #007bff;
+  background-color: #5856d6;
   color: white;
   border: none;
   border-radius: 4px;
@@ -51,7 +55,7 @@ const DDayStatus = styled.div`
 
 const DDay = styled.div`
   color: #fff;
-  background-color: #ff4757;
+  background-color: #5856d6;
   padding: 5px 10px;
   border-radius: 15px;
   font-weight: bold;
@@ -59,7 +63,7 @@ const DDay = styled.div`
 
 const Status = styled.div`
   font-size: 16px;
-  color: #007bff;
+  color: #5856d6;
   margin-left: 10px;
 `;
 
@@ -109,9 +113,9 @@ const Date = styled.div`
 
 const Image = styled.img`
   width: 100%;
-  max-width: 500px;
+  /* max-width: 500px; */
   height: auto;
-  max-height: 300px;
+  /* max-height: 300px; */
   border-radius: 8px;
   margin-bottom: 30px;
   display: block;
@@ -229,10 +233,9 @@ const formatDate = (dateStr) => {
 const dummyPosts = [
   {
     id: 1,
-    title:
-      "Study Post 1: This is a very long title that will be displayed in two lines",
+    title: "글 제목 더미 텍스트입니다 글 제목 더미텍스트입니다 글 제목 더미",
     category: "스터디",
-    imageUrl: "https://via.placeholder.com/150",
+    imageUrl: img1,
     dday: "D-3",
     location: "Seoul",
     author: "User1",
@@ -242,10 +245,9 @@ const dummyPosts = [
   },
   {
     id: 2,
-    title:
-      "Culture Post 1: Another example of a long title that needs to be truncated",
+    title: "제주도 여행 8월. 일정 맞는 분들 함께 Go",
     category: "문화",
-    imageUrl: "https://via.placeholder.com/150",
+    imageUrl: img2,
     dday: "D-10",
     location: "Busan",
     author: "User2",
@@ -255,9 +257,9 @@ const dummyPosts = [
   },
   {
     id: 3,
-    title: "Hobby Post 1: Short and sweet title for a hobby post",
+    title: "뭉크 전시! 이것만을 알고가자!!!",
     category: "취미",
-    imageUrl: "https://via.placeholder.com/150",
+    imageUrl: img3,
     dday: "D-5",
     location: "Incheon",
     author: "User3",
@@ -267,9 +269,9 @@ const dummyPosts = [
   },
   {
     id: 4,
-    title: "Travel Post 1: Exploring the wonders of the world",
+    title: "이제는 저도 작가랍니다",
     category: "여행",
-    imageUrl: "https://via.placeholder.com/150",
+    imageUrl: img4,
     dday: "D-2",
     location: "Jeju",
     author: "User4",
@@ -396,4 +398,3 @@ const PostDetail = () => {
 };
 
 export default PostDetail;
-

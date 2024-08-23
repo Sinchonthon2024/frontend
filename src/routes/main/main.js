@@ -4,6 +4,10 @@ import styled from "styled-components";
 import axios from "axios";
 import Article from "../../components/article/Article"; // Article 컴포넌트 불러오기
 import Post from "./Post"; // Importing the Post component
+import img1 from "../../../src/assets/images/Rectangle10.jpg";
+import img2 from "../../../src/assets/images/Rectangle11.jpg";
+import img3 from "../../../src/assets/images/Rectangle12.jpg";
+import img4 from "../../../src/assets/images/Rectangle13.jpg";
 
 const Container = styled.div``;
 
@@ -73,12 +77,12 @@ const University = styled.div`
 
 const Label = styled.span`
   color: #5e5ce6; /* Specific color for labels */
-  letter-spacing: 2px; /* Increased letter spacing */
+  letter-spacing: -1px; /* Increased letter spacing */
 `;
 
 const Text = styled.span`
   color: #000; /* Specific color for text */
-  letter-spacing: 2px; /* Increased letter spacing */
+  letter-spacing: -1px; /* Increased letter spacing */
 `;
 
 const WriteButton = styled.button`
@@ -103,7 +107,6 @@ const ArticleList = styled.div`
 
 const Main = () => {
   const navigate = useNavigate();
-  // const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("전체보기");
   const [navigatorStyle, setNavigatorStyle] = useState({
@@ -156,6 +159,7 @@ const Main = () => {
   //       if (err.response && err.response.status === 400) {
   //       } else {
   //         setError(err.response.data.detail);
+  // 더미 데이터
   // }, []);
   //   fetchPosts();
 
@@ -166,10 +170,9 @@ const Main = () => {
   const posts = [
     {
       id: 1,
-      title:
-        "Study Post 1: This is a very long title that will be displayed in two lines",
+      title: "글 제목 더미 텍스트입니다 글 제목 더미텍스트입니다 글 제목 더미",
       category: "스터디",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img1,
       dday: "D-3",
       location: "Seoul",
       author: "User1",
@@ -179,10 +182,9 @@ const Main = () => {
     },
     {
       id: 2,
-      title:
-        "Culture Post 1: Another example of a long title that needs to be truncated",
+      title: "제주도 여행 8월. 일정 맞는 분들 함께 Go",
       category: "문화",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img2,
       dday: "D-10",
       location: "Busan",
       author: "User2",
@@ -192,9 +194,9 @@ const Main = () => {
     },
     {
       id: 3,
-      title: "Hobby Post 1: Short and sweet title for a hobby post",
+      title: "뭉크 전시! 이것만을 알고가자!!!",
       category: "취미",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img3,
       dday: "D-5",
       location: "Incheon",
       author: "User3",
@@ -204,9 +206,9 @@ const Main = () => {
     },
     {
       id: 4,
-      title: "Travel Post 1: Exploring the wonders of the world",
+      title: "이제는 저도 작가랍니다",
       category: "여행",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img4,
       dday: "D-2",
       location: "Jeju",
       author: "User4",
@@ -215,49 +217,6 @@ const Main = () => {
       likes: 45,
     },
   ];
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     try {
-  //       const accessToken = localStorage.getItem("access_token");
-
-  //       if (!accessToken) {
-  //         setError("로그인이 필요합니다.");
-  //         return;
-  //       }
-
-  //       const response = await axios.get("https://8mtbdhsm-8000.asse.devtunnels.ms/api/posts", {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       });
-
-  //       const fetchedPosts = response.data.map((item) => ({
-  //         id: item.id,
-  //         title: item.post.title,
-  //         category: item.post.category,
-  //         imageUrl: item.post.image,
-  //         dday: `D-${Math.ceil(
-  //           (new Date(item.post.deadline) - new Date()) / (1000 * 60 * 60 * 24)
-  //         )}`,
-  //         location: item.post.detail,
-  //         author: item.user_name,
-  //         date: item.date,
-  //         participants: `0/${item.post.limit}`, // 예시로 설정한 인원 정보, 실제 데이터에 맞게 수정 필요
-  //         likes: 0, // 예시로 설정한 좋아요 수, 실제 데이터에 맞게 수정 필요
-  //       }));
-
-  //       setPosts(fetchedPosts);
-  //     } catch (err) {
-  //       if (err.response && err.response.status === 400) {
-  //         setError(err.response.data.detail);
-  //       } else {
-  //         setError("게시물을 불러오는 중 오류가 발생했습니다.");
-  //       }
-  //     }
-  //   };
-
-  //   fetchPosts();
-  // }, []);
 
   const updateNavigatorPosition = () => {
     const currentTab = tabsRef.current.find(
@@ -319,12 +278,13 @@ const Main = () => {
       <InfoBar>
         <Info>
           <Location>
-            <Label>현재 위치 |</Label> <Text>서울</Text>
+            <Label>현재 위치 |</Label> <Text>서울 마포구</Text>
           </Location>
           <University>
-            <Label>연결 가능 대학 |</Label> <Text>서울대학교</Text>
+            <Label>연결 가능 대학 |</Label>{" "}
+            <Text>홍익대학교, 서강대학교, 연세대학교, 이화여자대학교</Text>
           </University>
-        </Info> 
+        </Info>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 

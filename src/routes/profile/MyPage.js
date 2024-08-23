@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Post from "../main/Post"; // Importing the Post component
-
+import img1 from "../../../src/assets/images/Rectangle10.jpg";
+import img2 from "../../../src/assets/images/Rectangle11.jpg";
+import img3 from "../../../src/assets/images/Rectangle12.jpg";
+import img4 from "../../../src/assets/images/Rectangle13.jpg";
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
@@ -79,10 +82,9 @@ const MyPage = () => {
   const dummyPosts = [
     {
       id: 1,
-      title:
-        "Study Post 1: This is a very long title that will be displayed in two lines",
+      title: "글 제목 더미 텍스트입니다 글 제목 더미텍스트입니다 글 제목 더미",
       category: "스터디",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img1,
       dday: "D-3",
       location: "Seoul",
       author: "User1",
@@ -92,10 +94,9 @@ const MyPage = () => {
     },
     {
       id: 2,
-      title:
-        "Culture Post 1: Another example of a long title that needs to be truncated",
+      title: "제주도 여행 8월. 일정 맞는 분들 함께 Go",
       category: "문화",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img2,
       dday: "D-10",
       location: "Busan",
       author: "User2",
@@ -105,9 +106,9 @@ const MyPage = () => {
     },
     {
       id: 3,
-      title: "Hobby Post 1: Short and sweet title for a hobby post",
+      title: "뭉크 전시! 이것만을 알고가자!!!",
       category: "취미",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img3,
       dday: "D-5",
       location: "Incheon",
       author: "User3",
@@ -117,9 +118,9 @@ const MyPage = () => {
     },
     {
       id: 4,
-      title: "Travel Post 1: Exploring the wonders of the world",
+      title: "이제는 저도 작가랍니다",
       category: "여행",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: img4,
       dday: "D-2",
       location: "Jeju",
       author: "User4",

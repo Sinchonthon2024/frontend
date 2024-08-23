@@ -7,6 +7,10 @@ const PostContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  &:hover {
+    transform: translateY(-3%);
+    transition: transform 0.2s ease-in;
+  }
 `;
 
 const PostImage = styled.img`
