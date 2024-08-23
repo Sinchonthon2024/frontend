@@ -3,6 +3,7 @@ import Home from "./routes/home";
 import Main from "./routes/main/main";
 import Layout from "./components/layout/layout";
 import Login from "./routes/login/login";
+import PostDetail from "./routes/main/PostDetail";
 
 const Router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const Router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "main/post/:id",
+        element: <PostDetail />,
       },
     ],
   },

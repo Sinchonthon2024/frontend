@@ -1,4 +1,6 @@
+// src/routes/main/main.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -69,7 +71,7 @@ const WriteButton = styled.button`
 const PostList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px; /* 여백을 늘렸습니다 */
+  gap: 30px;
 `;
 
 const Post = styled.div`
@@ -77,6 +79,7 @@ const Post = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 `;
 
 const PostImage = styled.img`
@@ -153,6 +156,7 @@ const HeartIcon = styled.span`
 
 const Main = () => {
   const [activeTab, setActiveTab] = useState("전체보기");
+  const navigate = useNavigate();
 
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
   
@@ -259,6 +263,10 @@ const Main = () => {
     ? posts
     : posts.filter(post => post.category === activeTab);
 
+  const handlePostClick = (id) => {
+    navigate(`/main/post/${id}`);
+  };
+
   return (
     <Container>
       <Tabs>
@@ -283,7 +291,7 @@ const Main = () => {
 
       <PostList>
         {filteredPosts.map((post) => (
-          <Post key={post.id}>
+          <Post key={post.id} onClick={() => handlePostClick(post.id)}>
             <PostImage src={post.imageUrl} alt={post.title} />
             <PostDetails>
               <DDay>{post.dday}</DDay>
