@@ -1,6 +1,7 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const Container = styled.div`
   padding: 20px;
@@ -226,85 +227,135 @@ const formatDate = (dateStr) => {
 
 const PostDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [error, setError] = useState(null);
 
-  const post = {
-    id: 8,
-    title: "Travel Post 2: Unforgettable experiences in faraway places",
-    category: "여행",
-    imageUrl: "https://via.placeholder.com/150",
-    dday: "D-6",
-    location: "Gangwon",
-    author: "User8",
-    date: "2024-08-15",
-    participants: "5/5",
-    likes: 52,
-    content: "This is the content of the post. It describes the details of the travel experience.",
-    openChatLink: "https://openchat.example.com",
-    deadline: "2024-08-30",
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        const accessToken = localStorage.getItem("access_token");
+
+        if (!accessToken) {
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const response = await axios.get(
+          `https://your-api-endpoint.com/api/posts/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setPost(response.data);
+        // Assuming comments are part of the post response
+        setComments(response.data.comments || []);
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          setError(err.response.data.detail);
+        } else {
+          setError("게시물을 불러오는 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    fetchPostDetail();
+  }, [id]);
+
+  const handleEdit = () => {
+    navigate(`/post/edit/${id}`);
   };
 
-  const comments = [
-    {
-      id: 1,
-      author: "CommentUser1",
-      content: "This is a comment on the post.",
-      date: "2024-08-16",
-    },
-    {
-      id: 2,
-      author: "CommentUser2",
-      content: "Another comment here!",
-      date: "2024-08-17",
-    },
-  ];
+  const handleDelete = async () => {
+    try {
+      const accessToken = localStorage.getItem("access_token");
+
+      if (!accessToken) {
+        setError("로그인이 필요합니다.");
+        return;
+      }
+
+      await axios.delete(`https://your-api-endpoint.com/api/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      navigate("/main");
+    } catch (err) {
+      setError("게시물을 삭제하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!post) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <Container>
       <ContentWrapper>
         <Header>
-          <Button>수정</Button>
-          <Button>삭제</Button>
+          <Button onClick={handleEdit}>수정</Button>
+          <Button onClick={handleDelete}>삭제</Button>
         </Header>
 
         <InfoRow>
           <DDayStatus>
-            <DDay>{post.dday}</DDay>
+            <DDay>{post.post.dday}</DDay>
             <Status>모집 중</Status>
           </DDayStatus>
         </InfoRow>
 
         <InfoRow>
-          <CategoryLocation>{post.category} • {post.location}</CategoryLocation>
+          <CategoryLocation>
+            {post.post.category} • {post.post.detail}
+          </CategoryLocation>
           <Likes>
             <HeartIcon>❤️</HeartIcon>
-            {post.likes}
+            {post.post.likes_count}
           </Likes>
         </InfoRow>
 
-        <Title>{post.title}</Title>
+        <Title>{post.post.title}</Title>
 
         <SubInfoRow>
-          <Author>작성자: {post.author}</Author>
-          <Participants>모집인원: {post.participants}</Participants>
+          <Author>작성자: {post.user_name}</Author>
+          <Participants>모집인원: {post.post.limit}</Participants>
         </SubInfoRow>
 
         <Date>작성일: {formatDate(post.date)}</Date>
 
-        <Image src={post.imageUrl} alt={post.title} />
+        <Image src={post.post.image} alt={post.post.title} />
 
         <ContentTitle>본문 내용</ContentTitle>
-        <Content>{post.content}</Content>
+        <Content>{post.post.text}</Content>
 
-        <OpenChatTitle>오픈채팅방 링크</OpenChatTitle>
-        <OpenChatLink href={post.openChatLink} target="_blank" rel="noopener noreferrer">
-          {post.openChatLink}
-        </OpenChatLink>
+        {post.post.link && (
+          <>
+            <OpenChatTitle>오픈채팅방 링크</OpenChatTitle>
+            <OpenChatLink
+              href={post.post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {post.post.link}
+            </OpenChatLink>
+          </>
+        )}
 
         <DeadlineTitle>마감일</DeadlineTitle>
-        <DeadlineDate>{formatDate(post.deadline)}</DeadlineDate>
+        <DeadlineDate>{formatDate(post.post.deadline)}</DeadlineDate>
       </ContentWrapper>
 
-      <CommentsHeader>
+      {/* <CommentsHeader>
         <CommentsTitle>
           댓글 <CommentCount>{comments.length}</CommentCount>
         </CommentsTitle>
@@ -321,7 +372,7 @@ const PostDetail = () => {
             </CommentContentWrapper>
           </CommentRow>
         </CommentWrapper>
-      ))}
+      ))} */}
     </Container>
   );
 };
