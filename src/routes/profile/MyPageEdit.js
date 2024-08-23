@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import LoginMap from "../../components/login/login-map";
 
 const Container = styled.div`
   max-width: 600px;
@@ -38,7 +39,7 @@ const Input = styled.input`
 
 const Button = styled.button`
   padding: 10px 20px;
-  background-color: #5E5CE6;
+  background-color: #5e5ce6;
   color: white;
   border: none;
   border-radius: 4px;
@@ -81,7 +82,7 @@ const MyPageEdit = () => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
-
+        <LoginMap setLocation={setLocation} />
         <Button type="submit">수정하기</Button>
       </Form>
     </Container>

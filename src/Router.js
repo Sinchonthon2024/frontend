@@ -6,11 +6,16 @@ import MyPage from "./routes/profile/MyPage";
 import MyPageEdit from "./routes/profile/MyPageEdit";
 import Login from "./routes/login/login";
 import PostDetail from "./routes/main/PostDetail";
+import ProtectedRoute from "./components/common/protected-route";
 
 const Router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
@@ -32,10 +37,7 @@ const Router = createBrowserRouter([
         path: "main",
         element: <Main />,
       },
-      {
-        path: "login",
-        element: <Login />,
-      },
+
       {
         path: "main/post/:id",
         element: <PostDetail />,
@@ -49,6 +51,10 @@ const Router = createBrowserRouter([
         element: <Main />,
       },
     ],
+  },
+  {
+    path: "login",
+    element: <Login />,
   },
 ]);
 

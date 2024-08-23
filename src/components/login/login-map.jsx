@@ -109,7 +109,10 @@ const LoginMap = ({ setLocation }) => {
     <Wrapper>
       {error && <div>{error}</div>}
       {/* {posData && <div>{posData.documents[0]?.address?.address_name}</div>} */}
-      <div style={{ width: "300px", height: "200px" }} id="map"></div>
+      <div
+        style={{ width: "300px", height: "200px", marginBottom: "20px" }}
+        id="map"
+      ></div>
     </Wrapper>
   );
 };

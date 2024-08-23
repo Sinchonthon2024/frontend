@@ -18,7 +18,9 @@ const Header = () => {
     setPath(p);
 
     const currentTab = tabsRef.current.find(
-      (tab) => tab.textContent === (p === "socialing" || p === "main" ? "소셜링" : "나눔")
+      (tab) =>
+        tab.textContent ===
+        (p === "socialing" || p === "main" ? "소셜링" : "나눔")
     );
 
     if (currentTab) {
@@ -53,7 +55,7 @@ const Header = () => {
   return (
     <Wrapper>
       <LeftContainer>
-        <Logo>로고</Logo>
+        <Logo onClick={() => navigate("/")}>로고</Logo>
         <SearchBox type="text" placeholder="검색어를 입력해 주세요." />
       </LeftContainer>
       <NaviTab>
@@ -84,7 +86,7 @@ const Header = () => {
         </NaviBox>
       </NaviTab>
       <MenuTab>
-        <div>마이페이지</div>
+        <div onClick={() => navigate("/mypage")}>마이페이지</div>
       </MenuTab>
     </Wrapper>
   );
@@ -136,7 +138,8 @@ const Navigator = styled.div`
   background-color: #5856d6;
   border-radius: 2px;
   opacity: 0; /* Initial opacity */
-  transition: left 0.3s ease-in-out, width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Sliding and fade effects */
+  transition: left 0.3s ease-in-out, width 0.3s ease-in-out,
+    opacity 0.3s ease-in-out; /* Sliding and fade effects */
 `;
 
 const Logo = styled.div``;

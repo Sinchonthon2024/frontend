@@ -4,6 +4,7 @@ import LoginMap from "../../components/login/login-map";
 import { auth } from "../../firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { instance } from "../../api/instance";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -11,11 +12,21 @@ const Login = () => {
   const [inputEmail, setInputEmail] = useState();
   const [inputUniv, setInputUniv] = useState();
   const [univCheck, setUnivCheck] = useState(false);
+  const [univDelayCheck, setUnivDelayCheck] = useState(false);
   const [codeCheck, setCodeCheck] = useState(false);
-
+  const [inputName, setInputName] = useState();
+  const navigate = useNavigate();
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
+  useEffect(() => {
+    if (univCheck) {
+      setTimeout(() => {
+        setUnivDelayCheck(true);
+        setUnivCheck(false);
+      }, 2000);
+    }
+  }, [univCheck]);
   useEffect(() => {
     // console.log(location);
   }, [location]);
@@ -29,7 +40,7 @@ const Login = () => {
         email,
         uid,
       });
-      console.log(res);
+      localStorage.setItem("access_token", res.access_token);
     } catch (e) {
       console.error(e);
     } finally {
@@ -199,10 +210,39 @@ const Login = () => {
       certify(e.target.value);
     }
   };
+  const onNameChange = (e) => {
+    setInputName(e.target.value);
+  };
+  const onSignInClick = async () => {
+    const token = localStorage.getItem("access_token");
+    const body = {
+      user_name: inputName,
+      home: selectedOption,
+      school: inputUniv,
+      region_1depth_name: "서울",
+      region_2depth_name: "서초구",
+    };
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    try {
+      const res = await instance.post(`api/auth/signup`, body, { headers });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      navigate("/socialing");
+    }
+  };
   return (
     <LoginContainer>
       <Title>로그인</Title>
-      <SocialButton onClick={onLogInClick}>구글 소셜 로그인</SocialButton>
+      <SocialButton onClick={onLogInClick}>
+        <img
+          style={{ width: "20px" }}
+          src="https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png"
+        />
+        구글 소셜 로그인
+      </SocialButton>
       <DividerContainer>
         <DividerLine />
         <DividerText>또는</DividerText>
@@ -211,7 +251,7 @@ const Login = () => {
       <SignupLink>회원가입</SignupLink>
 
       <Label>닉네임</Label>
-      <FullWidthInput defaultValue={googleName} placeholder="닉네임" />
+      <FullWidthInput onChange={onNameChange} placeholder="닉네임" />
 
       <Label>자취 여부</Label>
       <ButtonGroup>
@@ -240,7 +280,8 @@ const Login = () => {
         <Input onChange={onUnivChange} placeholder="대학을 입력해주세요" />
         <SendButton onClick={onSendCodeClick}>대학교 확인</SendButton>
       </InlineGroup>
-      {univCheck && (
+      {univCheck && <LoadingGif src="https://i.gifer.com/ZC9Y.gif" alt="" />}
+      {univDelayCheck && (
         <UnivCertify>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -268,7 +309,7 @@ const Login = () => {
         <Input onChange={onCodeChange} placeholder="인증번호 입력" />
         <VerifyButton onClick={onCodeClick}>인증</VerifyButton>
       </InlineGroup>
-      {univCheck && (
+      {codeCheck && (
         <UnivCertify className="code">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -288,6 +329,9 @@ const Login = () => {
     </LoginContainer>
   );
 };
+const LoadingGif = styled.img`
+  width: 50px;
+`;
 const UnivCertify = styled.div`
   color: #4285f4;
   font-size: 12px;
@@ -318,10 +362,14 @@ const Title = styled.h1`
 
 const SocialButton = styled.button`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   padding: 12px;
   margin-bottom: 20px;
-  background-color: #4285f4;
-  color: white;
+  background-color: #f3f4f4;
+  color: #030303;
   border: none;
   border-radius: 5px;
   cursor: pointer;
