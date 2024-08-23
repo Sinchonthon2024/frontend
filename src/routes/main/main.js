@@ -102,6 +102,7 @@ const ArticleList = styled.div`
 
 const Main = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("전체보기");
   const [navigatorStyle, setNavigatorStyle] = useState({
     width: 0,
