@@ -57,14 +57,14 @@ const University = styled.div`
 
 const WriteButton = styled.button`
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #5E5CE6;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #218838;
+    background-color: #4D4BCF;
   }
 `;
 
@@ -155,6 +155,7 @@ const HeartIcon = styled.span`
 `;
 
 const Main = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("전체보기");
   const navigate = useNavigate();
 
@@ -286,7 +287,7 @@ const Main = () => {
           <Location>현재 위치: 서울</Location>
           <University>연결 가능 대학: 서울대학교</University>
         </Info>
-        <WriteButton>글쓰기</WriteButton>
+        <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 
       <PostList>
