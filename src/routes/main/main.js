@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
+import Article from "../../components/article/Article"; // Article 컴포넌트 불러오기
 import Post from "./Post"; // Importing the Post component
 
 const Container = styled.div``;
@@ -91,7 +93,7 @@ const WriteButton = styled.button`
   }
 `;
 
-const PostList = styled.div`
+const ArticleList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
@@ -111,6 +113,54 @@ const Main = () => {
 
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
 
+  // const [posts, setPosts] = useState([]);
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //       if (!accessToken) {
+  //     try {
+  //       const accessToken = localStorage.getItem("access_token");
+
+  //         return;
+  //         setError("로그인이 필요합니다.");
+  //       }
+
+  //       const response = await axios.get(
+  //         "https://your-api-endpoint.com/api/posts",
+  //         {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           headers: {
+  //           },
+  //         }
+  //       );
+
+  //       const fetchedPosts = response.data.map((item) => ({
+  //         id: item.id,
+  //         category: item.post.category,
+  //         title: item.post.title,
+  //         dday: `D-${Math.ceil(
+  //         imageUrl: item.post.image,
+  //           (new Date(item.post.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+  //         )}`,
+  //         location: item.post.detail,
+  //         author: item.user_name,
+  //         participants: `0/${item.post.limit}`, // 예시로 설정한 인원 정보, 실제 데이터에 맞게 수정 필요
+  //         date: item.date,
+
+  //       }));
+  //         likes: 0, // 예시로 설정한 좋아요 수, 실제 데이터에 맞게 수정 필요
+  //     } catch (err) {
+  //       setPosts(fetchedPosts);
+  //       if (err.response && err.response.status === 400) {
+  //       } else {
+  //         setError(err.response.data.detail);
+  // 더미 데이터
+  // }, []);
+  //   fetchPosts();
+
+  //   };
+  //     }
+  //         setError("게시물을 불러오는 중 오류가 발생했습니다.");
+  //       }
   const posts = [
     {
       id: 1,
@@ -233,7 +283,9 @@ const Main = () => {
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 
-      <PostList>
+      {error && <p>{error}</p>}
+
+      <ArticleList>
         {filteredPosts.map((post) => (
           <Post
             key={post.id}
@@ -241,7 +293,7 @@ const Main = () => {
             onClick={() => handlePostClick(post.id)}
           />
         ))}
-      </PostList>
+      </ArticleList>
     </Container>
   );
 };

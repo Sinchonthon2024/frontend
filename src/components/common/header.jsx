@@ -161,9 +161,10 @@ const MenuTab = styled.div`
   display: flex;
   justify-content: end;
   align-items: center;
-  gap: 2rem;
+  gap: 20px;
   div {
     cursor: pointer;
+    font-weight: 500;
   }
 `;
 
