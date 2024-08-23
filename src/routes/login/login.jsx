@@ -9,185 +9,229 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [location, setLocation] = useState("/");
-  const [inputEmail, setInputEmail] = useState("");
-  const [inputUniv, setInputUniv] = useState("");
+  const [inputEmail, setInputEmail] = useState();
+  const [inputUniv, setInputUniv] = useState();
   const [univCheck, setUnivCheck] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
   const [univDelayCheck, setUnivDelayCheck] = useState(false);
   const [codeCheck, setCodeCheck] = useState(false);
-
+  const [inputName, setInputName] = useState();
+  const navigate = useNavigate();
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
   useEffect(() => {
-    // Debug location
-    console.log("Current location:", location);
+    if (univCheck) {
+      setTimeout(() => {
+        setUnivDelayCheck(true);
+        setUnivCheck(false);
+      }, 2000);
+    }
+  }, [univCheck]);
+  useEffect(() => {
+    // console.log(location);
   }, [location]);
-
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [inputCode, setInputCode] = useState();
+  const [googleName, setGoogleName] = useState();
   const fetchLogin = async (name, email, uid) => {
     try {
       const res = await instance.post(`api/auth/login`, {
-        name,
-        email,
-        uid,
+        name: auth?.currentUser.displayName,
+        email: auth?.currentUser.email,
+        uid: auth?.currentUser.uid,
       });
-      localStorage.setItem("access_token", res.access_token);
+      localStorage.setItem("access_token", res.data.access_token);
     } catch (e) {
-      console.error("Login error:", e);
+      console.error(e);
+    } finally {
     }
   };
-
   const onLogInClick = async () => {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      setGoogleName(auth.currentUser.displayName);
-      setLoginSuccess(true);
-      fetchLogin(
-        auth.currentUser.displayName,
-        auth.currentUser.email,
-        auth.currentUser.uid
-      );
     } catch (error) {
-      console.log("Login failed:", error);
+      console.log(error);
+    } finally {
+      setLoginSuccess(true);
+      setGoogleName(auth.currentUser.displayName);
+      fetchLogin();
     }
   };
-
   const onSendCodeClick = () => {
-    if (!inputEmail || !inputUniv) {
-      alert("Please enter both your email and university.");
-      return;
+    // UnivCert.certify 함수 정의
+    function certify(key, email, univName, univCheck) {
+      // API URL 설정
+      const url = "https://univcert.com/api/v1/certify";
+
+      // 요청에 포함할 데이터 구성
+      const data = {
+        key: key, // 부여받은 API KEY
+        email: email, // 인증할 이메일
+        univName: univName, // 대학 이름
+        univ_check: univCheck, // 대학 재학 여부 확인
+      };
+
+      // fetch를 사용하여 POST 요청 보내기
+      fetch(url, {
+        method: "POST", // HTTP 메서드는 POST
+        headers: {
+          "Content-Type": "application/json", // 요청 본문이 JSON 형식임을 설정
+        },
+        body: JSON.stringify(data), // 요청 본문에 JSON 데이터를 문자열로 변환하여 포함
+      })
+        .then((response) => response.json()) // 응답을 JSON 형태로 파싱
+        .then((responseData) => {
+          // 응답 결과 처리
+          if (responseData.success) {
+            console.log("인증번호 발송 성공");
+          } else {
+            console.log("인증번호 발송 실패");
+            if (responseData.status) {
+              console.log("오류 상태 코드:", responseData.status);
+            }
+            if (responseData.message) {
+              console.log("오류 메시지:", responseData.message);
+            }
+          }
+        })
+        .catch((error) => {
+          // 네트워크 오류 처리
+          console.error("Error:", error);
+        });
     }
 
-    const key = "0eb8aef4-add3-4bec-affc-09023e7c8eff";
-    certifyUniversity(key, inputEmail, inputUniv, true);
+    // 함수 호출 예시
+    certify(
+      "0eb8aef4-add3-4bec-affc-09023e7c8eff",
+      inputEmail,
+      inputUniv,
+      true
+    );
   };
-
   const onCodeClick = () => {
-    const key = "0eb8aef4-add3-4bec-affc-09023e7c8eff";
-    certifyCode(key, inputEmail, inputUniv, inputCode);
-  };
+    // UnivCert.certify 함수 정의
+    function certify(key, email, univName, code) {
+      // API URL 설정
+      const url = "https://univcert.com/api/v1/certifycode";
 
+      // 요청에 포함할 데이터 구성
+      const data = {
+        key: key, // 부여받은 API KEY
+        email: email, // 인증할 이메일
+        univName: univName, // 대학 이름
+        code: code, // 대학 재학 여부 확인
+      };
+
+      // fetch를 사용하여 POST 요청 보내기
+      fetch(url, {
+        method: "POST", // HTTP 메서드는 POST
+        headers: {
+          "Content-Type": "application/json", // 요청 본문이 JSON 형식임을 설정
+        },
+        body: JSON.stringify(data), // 요청 본문에 JSON 데이터를 문자열로 변환하여 포함
+      })
+        .then((response) => response.json()) // 응답을 JSON 형태로 파싱
+        .then((responseData) => {
+          // 응답 결과 처리
+          if (responseData.success) {
+            console.log("인증코드가 맞습니다.");
+            setCodeCheck(true);
+          } else {
+            console.log("인증코드가 아닙니다.");
+            if (responseData.status) {
+              console.log("오류 상태 코드:", responseData.status);
+            }
+            if (responseData.message) {
+              console.log("오류 메시지:", responseData.message);
+            }
+          }
+        })
+        .catch((error) => {
+          // 네트워크 오류 처리
+          console.error("Error:", error);
+        });
+    }
+
+    // 함수 호출 예시
+    certify(
+      "0eb8aef4-add3-4bec-affc-09023e7c8eff",
+      inputEmail,
+      inputUniv,
+      inputCode
+    );
+  };
   const onCodeChange = (e) => {
     setInputCode(e.target.value);
   };
-
   const onUnivChange = (e) => {
-    setInputUniv(e.target.value);
-    setUnivCheck(false);
-    setEmailVerified(false);
-    setCodeCheck(false);
-    setSendButtonText("인증번호 발송"); // Reset button text when input changes
-  };
+    function certify(univName) {
+      // API URL 설정
+      const url = "https://univcert.com/api/v1/check";
 
-  const onVerifyUnivClick = () => {
-    if (inputUniv.length > 4) {
-      verifyUniversity(inputUniv);
+      // 요청에 포함할 데이터 구성
+      const data = {
+        univName: univName, // 대학 이름
+      };
+
+      // fetch를 사용하여 POST 요청 보내기
+      fetch(url, {
+        method: "POST", // HTTP 메서드는 POST
+        headers: {
+          "Content-Type": "application/json", // 요청 본문이 JSON 형식임을 설정
+        },
+        body: JSON.stringify(data), // 요청 본문에 JSON 데이터를 문자열로 변환하여 포함
+      })
+        .then((response) => response.json()) // 응답을 JSON 형태로 파싱
+        .then((responseData) => {
+          // 응답 결과 처리
+          if (responseData.success) {
+            console.log("대학 확인 성공");
+            setInputUniv(e.target.value);
+            setUnivCheck(true);
+          } else {
+            console.log("대학 확인 실패");
+            if (responseData.status) {
+              console.log("오류 상태 코드:", responseData.status);
+            }
+            if (responseData.message) {
+              console.log("오류 메시지:", responseData.message);
+            }
+          }
+        })
+        .catch((error) => {
+          // 네트워크 오류 처리
+          console.error("Error:", error);
+        });
+    }
+
+    if (e.target.value.length > 4) {
+      // 함수 호출 예시
+      certify(e.target.value);
     }
   };
-
-  const certifyUniversity = (key, email, univName, univCheck) => {
-    const url = "https://univcert.com/api/v1/certify";
-    const data = {
-      key,
-      email,
-      univName,
-      univ_check: univCheck,
-    };
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        console.log("Response status:", response.status);
-        console.log("Response headers:", response.headers);
-        if (!response.ok) {
-          console.error("Server responded with an error:", response.statusText);
-        }
-
-        return response.json();
-      })
-      .then((responseData) => {
-        console.log("API Response Data:", responseData);
-
-        if (responseData.success) {
-          console.log("인증번호 발송 성공");
-          setEmailVerified(true);
-          setSendButtonText("발송완료"); // Update button text on success
-        } else {
-          console.log("인증번호 발송 실패:", responseData);
-          setEmailVerified(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error sending verification code:", error);
-        setEmailVerified(false);
-      });
+  const onNameChange = (e) => {
+    setInputName(e.target.value);
   };
-
-  const certifyCode = (key, email, univName, code) => {
-    const url = "https://univcert.com/api/v1/certifycode";
-    const data = {
-      key,
-      email,
-      univName,
-      code,
+  const onSignInClick = async () => {
+    const token = localStorage.getItem("access_token");
+    const body = {
+      user_name: inputName,
+      home: selectedOption,
+      school: inputUniv,
+      region_1depth_name: "서울",
+      region_2depth_name: "서초구",
     };
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        if (responseData.success) {
-          console.log("인증코드가 맞습니다.");
-          setCodeCheck(true);
-        } else {
-          console.log("인증코드가 아닙니다:", responseData);
-          setCodeCheck(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error verifying code:", error);
-        setCodeCheck(false);
-      });
-  };
-
-  const verifyUniversity = (univName) => {
-    const url = "https://univcert.com/api/v1/check";
-    const data = {
-      univName,
+    const headers = {
+      Authorization: `Bearer ${token}`,
     };
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        if (responseData.success) {
-          console.log("대학 확인 성공");
-          setUnivCheck(true);
-        } else {
-          console.log("대학 확인 실패:", responseData);
-          setUnivCheck(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error verifying university:", error);
-        setUnivCheck(false);
-      });
+    try {
+      const res = await instance.post(`api/auth/signup`, body, { headers });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      navigate("/socialing");
+    }
   };
   return (
     <LoginContainer>
@@ -207,7 +251,7 @@ const Login = () => {
       <SignupLink>회원가입</SignupLink>
 
       <Label>닉네임</Label>
-      <FullWidthInput defaultValue={googleName} placeholder="닉네임" />
+      <FullWidthInput onChange={onNameChange} placeholder="닉네임" />
 
       <Label>자취 여부</Label>
       <ButtonGroup>
@@ -233,8 +277,8 @@ const Login = () => {
 
       <Label>재학 중인 대학교</Label>
       <InlineGroup>
-        <Input onChange={onUnivChange} placeholder="" />
-        <SendButton onClick={onVerifyUnivClick}>대학교 확인</SendButton>
+        <Input onChange={onUnivChange} placeholder="대학을 입력해주세요" />
+        <SendButton onClick={onSendCodeClick}>대학교 확인</SendButton>
       </InlineGroup>
       {univCheck && <LoadingGif src="https://i.gifer.com/ZC9Y.gif" alt="" />}
       {univDelayCheck && (
@@ -257,15 +301,15 @@ const Login = () => {
           onChange={(e) => {
             setInputEmail(e.target.value);
           }}
-          placeholder=""
+          placeholder="대학교 공식 이메일"
         />
-        <SendButton onClick={onSendCodeClick}>{sendButtonText}</SendButton>
+        <SendButton onClick={onSendCodeClick}>인증번호 발송</SendButton>
       </InlineGroup>
       <InlineGroup>
-        <Input onChange={onCodeChange} placeholder="" />
+        <Input onChange={onCodeChange} placeholder="인증번호 입력" />
         <VerifyButton onClick={onCodeClick}>인증</VerifyButton>
       </InlineGroup>
-      {univCheck && (
+      {codeCheck && (
         <UnivCertify className="code">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -281,12 +325,15 @@ const Login = () => {
       <Label>거주 지역</Label>
       <FullWidthInput disabled value={location} placeholder="거주 지역" />
       <LoginMap setLocation={setLocation} />
-      <SubmitButton>회원가입</SubmitButton>
+      <SubmitButton onClick={() => navigate("/main")}>회원가입</SubmitButton>
     </LoginContainer>
   );
 };
+const LoadingGif = styled.img`
+  width: 50px;
+`;
 const UnivCertify = styled.div`
-  color: #4285f4;
+  color: #5e5ce6;
   font-size: 12px;
   margin-bottom: 20px;
   display: flex;
@@ -315,10 +362,14 @@ const Title = styled.h1`
 
 const SocialButton = styled.button`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   padding: 12px;
   margin-bottom: 20px;
-  background-color: #4285f4;
-  color: white;
+  background-color: #f3f4f4;
+  color: #030303;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -345,7 +396,7 @@ const DividerText = styled.span`
 const SignupLink = styled.a`
   align-self: flex-start;
   margin-bottom: 24px;
-  color: #4285f4;
+  color: #5e5ce6;
   cursor: pointer;
 `;
 
@@ -394,7 +445,7 @@ const OptionButton = styled.button`
   flex: 1;
   padding: 12px;
   margin: 0 5px;
-  background-color: ${({ selected }) => (selected ? "#007bff" : "#f0f0f0")};
+  background-color: ${({ selected }) => (selected ? "#5E5CE6" : "#f0f0f0")};
   color: ${({ selected }) => (selected ? "white" : "#333")};
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -420,7 +471,7 @@ const SendButton = styled.button`
   flex-basis: 40%;
   padding: 12px;
   margin-left: 10px;
-  background-color: #007bff;
+  background-color: #5e5ce6;
   color: white;
   border: none;
   border-radius: 5px;

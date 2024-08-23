@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import Post from "../main/Post"; // Importing the Post component
 
 const Container = styled.div`
   max-width: 600px;
@@ -54,7 +55,7 @@ const InfoItem = styled.div`
 const EditButton = styled.button`
   width: 100%;
   padding: 10px;
-  background: #5E5CE6;
+  background: #5e5ce6;
   color: white;
   border: none;
   border-radius: 8px;
@@ -63,12 +64,80 @@ const EditButton = styled.button`
   font-weight: 400;
 `;
 
+const ArticleContainer = styled.div``;
+
+const ArticleList = styled.div`
+  width: 100%;
+  display: grid;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  /* margin: 0 100px; */
+`;
+
 const MyPage = () => {
+  const dummyPosts = [
+    {
+      id: 1,
+      title:
+        "Study Post 1: This is a very long title that will be displayed in two lines",
+      category: "스터디",
+      imageUrl: "https://via.placeholder.com/150",
+      dday: "D-3",
+      location: "Seoul",
+      author: "User1",
+      date: "2024-08-20",
+      participants: "5/10",
+      likes: 23,
+    },
+    {
+      id: 2,
+      title:
+        "Culture Post 1: Another example of a long title that needs to be truncated",
+      category: "문화",
+      imageUrl: "https://via.placeholder.com/150",
+      dday: "D-10",
+      location: "Busan",
+      author: "User2",
+      date: "2024-08-18",
+      participants: "7/15",
+      likes: 15,
+    },
+    {
+      id: 3,
+      title: "Hobby Post 1: Short and sweet title for a hobby post",
+      category: "취미",
+      imageUrl: "https://via.placeholder.com/150",
+      dday: "D-5",
+      location: "Incheon",
+      author: "User3",
+      date: "2024-08-22",
+      participants: "2/5",
+      likes: 8,
+    },
+    {
+      id: 4,
+      title: "Travel Post 1: Exploring the wonders of the world",
+      category: "여행",
+      imageUrl: "https://via.placeholder.com/150",
+      dday: "D-2",
+      location: "Jeju",
+      author: "User4",
+      date: "2024-08-19",
+      participants: "10/10",
+      likes: 45,
+    },
+  ];
+
   const [activeComponent, setActiveComponent] = useState("posts");
   const navigate = useNavigate();
 
   const handleEditProfile = () => {
     navigate("/profile/edit");
+  };
+
+  const handlePostClick = (id) => {
+    navigate(`/main/post/${id}`);
   };
 
   return (
@@ -90,17 +159,27 @@ const MyPage = () => {
       </ButtonGroup>
 
       {activeComponent === "posts" && (
-        <div>
-          <p>여기에 내가 쓴 글 목록을 보여줍니다.</p>
-          {/* 내가 쓴 글 리스트 컴포넌트 추가 */}
-        </div>
+        <ArticleContainer>
+          {/* <p>여기에 내가 쓴 글 목록을 보여줍니다.</p> */}
+          <ArticleList>
+            {dummyPosts.map((post) => (
+              <Post
+                key={post.id}
+                post={post}
+                onClick={() => handlePostClick(post.id)}
+              />
+            ))}
+          </ArticleList>
+        </ArticleContainer>
       )}
 
       {activeComponent === "info" && (
         <InfoContainer>
           <InfoItem>현재 닉네임</InfoItem>
           <InfoItem>현재 위치</InfoItem>
-          <EditButton onClick={handleEditProfile}>내 정보 수정하러 가기</EditButton>
+          <EditButton onClick={handleEditProfile}>
+            내 정보 수정하러 가기
+          </EditButton>
         </InfoContainer>
       )}
     </Container>
