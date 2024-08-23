@@ -157,7 +157,6 @@ const HeartIcon = styled.span`
 const Main = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("전체보기");
-  const navigate = useNavigate();
 
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
   
@@ -267,6 +266,10 @@ const Main = () => {
   const handlePostClick = (id) => {
     navigate(`/main/post/${id}`);
   };
+
+    const handleWriteClick = () => {
+        navigate("/post");
+    }
 
   return (
     <Container>
