@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import imageLogo from '../../assets/images/write/imageLogo.svg';
+import imageLogo from "../../assets/images/write/imageLogo.svg";
 
 const Container = styled.div`
   max-width: 600px;
@@ -12,8 +12,10 @@ const Container = styled.div`
 
 const Title = styled.h2`
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  color: #000;
+  margin: 50px 0;
+  font-size: 36px;
+  font-weight: 700;
 `;
 
 const LabelContainer = styled.div`
@@ -24,12 +26,21 @@ const LabelContainer = styled.div`
 `;
 
 const Label = styled.label`
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 500;
+  color: #4B4B4B;
+`;
+
+const RequiredText = styled.span`
+  color: #5E5CE6;
+  font-size: 14px;
+  font-weight: 500;
 `;
 
 const OptionalText = styled.span`
-  color: #666;
-  font-size: 12px;
+  color: rgba(60, 60, 67, 0.60);
+  font-size: 14px;
+  font-weight: 500;
 `;
 
 const ButtonGroup = styled.div`
@@ -42,15 +53,11 @@ const Button = styled.button`
   flex: 1;
   padding: 10px;
   margin: 0 5px;
-  background-color: ${(props) => (props.active ? "#007bff" : "#e0e0e0")};
-  color: ${(props) => (props.active ? "white" : "black")};
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: ${(props) => (props.active ? "2px solid #5E5CE6" : "none")};
+  color: ${(props) => (props.active ? "#5E5CE6" : "rgba(60, 60, 67, 0.60)")};
   cursor: pointer;
-
-  &:hover {
-    background-color: ${(props) => (props.active ? "#0056b3" : "#ccc")};
-  }
+  border-radius: 8px;
+  background-color: #f5f5fa;
 
   &:first-child {
     margin-left: 0;
@@ -66,11 +73,12 @@ const ImageUploadContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   padding: 8px;
-  color: #3C3C4399;
+  color: #3c3c4399;
   font-size: 15px;
+  background-color: #f5f5fa;
 `;
 
 const HiddenFileInput = styled.input`
@@ -91,39 +99,50 @@ const Select = styled.select`
   width: 100%;
   padding: 8px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px transparent;
+  border-radius: 8px;
+  background-color: #F5F5FA;
+
+  option[value=""] {
+    color: rgba(60, 60, 67, 0.60);
+  }
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 8px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: #f5f5fa;
+
+  ::placeholder {
+    color: rgba(60, 60, 67, 0.60); /* placeholder 텍스트 색상 */
+  }
 `;
 
 const Textarea = styled.textarea`
   width: 100%;
   padding: 8px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   resize: vertical;
+  background-color: #f5f5fa;
+
+  ::placeholder {
+    color: rgba(60, 60, 67, 0.60); /* placeholder 텍스트 색상 */
+  }
 `;
 
 const SubmitButton = styled.button`
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background: #5E5CE6;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
 `;
 
 function Post() {
@@ -131,6 +150,7 @@ function Post() {
   const [subCategory, setSubCategory] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [limit, setLimit] = useState("");
   const [deadline, setDeadline] = useState("");
   const [image, setImage] = useState(null);
   const [chatLink, setChatLink] = useState("");
@@ -156,16 +176,25 @@ function Post() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // localStorage에서 access_token 가져오기
+    const accessToken = localStorage.getItem("access_token");
+
+    if (!accessToken) {
+      console.error("Access token is missing. Please log in again.");
+      return; // access_token이 없을 경우 요청을 보내지 않음
+    }
+
     const formData = new FormData();
-    formData.append("mainCategory", selectedCategory);
-    formData.append("subCategory", subCategory);
+    formData.append("category", selectedCategory);
+    formData.append("detail", subCategory);
     formData.append("title", title);
-    formData.append("content", content);
+    formData.append("text", content);
+    formData.append("limit", limit);
+    formData.append("link", chatLink);
     formData.append("deadline", deadline);
     if (image) {
       formData.append("image", image);
     }
-    formData.append("chatLink", chatLink);
 
     try {
       const response = await axios.post(
@@ -173,13 +202,25 @@ function Post() {
         formData,
         {
           headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
       console.log("Post created successfully:", response.data);
+
+      // 성공 시 response에서 id와 date를 받아 처리할 수 있습니다.
+      const { user_name, id, date, post } = response.data;
+      console.log("User Name:", user_name);
+      console.log("Created Post ID:", id);
+      console.log("Creation Date:", date);
+      console.log("Post Details:", post);
     } catch (error) {
-      console.error("There was an error creating the post!", error);
+      if (error.response && error.response.status === 400) {
+        console.error("Error:", error.response.data.detail);
+      } else {
+        console.error("There was an error creating the post!", error);
+      }
     }
   };
 
@@ -189,7 +230,7 @@ function Post() {
       <form onSubmit={handleSubmit}>
         <LabelContainer>
           <Label>메인 카테고리</Label>
-          <OptionalText>필수</OptionalText>
+          <RequiredText>필수</RequiredText>
         </LabelContainer>
         <ButtonGroup>
           <Button
@@ -210,7 +251,7 @@ function Post() {
 
         <LabelContainer>
           <Label htmlFor="subCategory">세부 카테고리</Label>
-          <OptionalText>필수</OptionalText>
+          <RequiredText>필수</RequiredText>
         </LabelContainer>
         <Select
           id="subCategory"
@@ -231,7 +272,7 @@ function Post() {
 
         <LabelContainer>
           <Label htmlFor="title">제목</Label>
-          <OptionalText>필수</OptionalText>
+          <RequiredText>필수</RequiredText>
         </LabelContainer>
         <Input
           id="title"
@@ -245,7 +286,7 @@ function Post() {
 
         <LabelContainer>
           <Label htmlFor="content">내용</Label>
-          <OptionalText>필수</OptionalText>
+          <RequiredText>필수</RequiredText>
         </LabelContainer>
         <Textarea
           id="content"
@@ -258,8 +299,22 @@ function Post() {
         ></Textarea>
 
         <LabelContainer>
+          <Label htmlFor="limit">모집 인원</Label>
+          <RequiredText>필수</RequiredText>
+        </LabelContainer>
+        <Input
+          id="limit"
+          name="limit"
+          type="number"
+          placeholder="모집 인원을 입력하세요"
+          required
+          value={limit}
+          onChange={(e) => setLimit(e.target.value)}
+        />
+
+        <LabelContainer>
           <Label htmlFor="deadline">마감일</Label>
-          <OptionalText>필수</OptionalText>
+          <RequiredText>필수</RequiredText>
         </LabelContainer>
         <Input
           id="deadline"

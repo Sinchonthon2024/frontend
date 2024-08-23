@@ -1,7 +1,8 @@
-// src/routes/main/main.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
+import Article from "../../components/article/Article"; // Article 컴포넌트 불러오기
 
 const Container = styled.div`
   padding: 20px;
@@ -57,113 +58,83 @@ const University = styled.div`
 
 const WriteButton = styled.button`
   padding: 10px 20px;
-  background-color: #5E5CE6;
+  background-color: #5e5ce6;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #4D4BCF;
+    background-color: #4d4bcf;
   }
 `;
 
-const PostList = styled.div`
+const ArticleList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
 `;
 
-const Post = styled.div`
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-`;
-
-const PostImage = styled.img`
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
-`;
-
-const PostDetails = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-`;
-
-const DDay = styled.div`
-  color: #fff;
-  background-color: #ff4757;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-weight: bold;
-`;
-
-const LocationDetail = styled.div`
-  color: #555;
-`;
-
-const Title = styled.h3`
-  font-size: 18px;
-  margin-bottom: 10px;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const Author = styled.div`
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 5px;
-`;
-
-const Date = styled.div`
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 10px;
-`;
-
-const PostFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Participants = styled.div`
-  font-size: 12px;
-  color: #555;
-`;
-
-const Likes = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  color: #555;
-`;
-
-const HeartIcon = styled.span`
-  color: #ff4757;
-  margin-right: 5px;
-`;
-
 const Main = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("전체보기");
+  // const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
 
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
-  
+
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     try {
+  //       const accessToken = localStorage.getItem("access_token");
+
+  //       if (!accessToken) {
+  //         setError("로그인이 필요합니다.");
+  //         return;
+  //       }
+
+  //       const response = await axios.get(
+  //         "https://your-api-endpoint.com/api/posts",
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         }
+  //       );
+
+  //       const fetchedPosts = response.data.map((item) => ({
+  //         id: item.id,
+  //         title: item.post.title,
+  //         category: item.post.category,
+  //         imageUrl: item.post.image,
+  //         dday: `D-${Math.ceil(
+  //           (new Date(item.post.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+  //         )}`,
+  //         location: item.post.detail,
+  //         author: item.user_name,
+  //         date: item.date,
+  //         participants: `0/${item.post.limit}`, // 예시로 설정한 인원 정보, 실제 데이터에 맞게 수정 필요
+  //         likes: 0, // 예시로 설정한 좋아요 수, 실제 데이터에 맞게 수정 필요
+  //       }));
+
+  //       setPosts(fetchedPosts);
+  //     } catch (err) {
+  //       if (err.response && err.response.status === 400) {
+  //         setError(err.response.data.detail);
+  //       } else {
+  //         setError("게시물을 불러오는 중 오류가 발생했습니다.");
+  //       }
+  //     }
+  //   };
+
+  //   fetchPosts();
+  // }, []);
+  // 더미 데이터
   const posts = [
     {
       id: 1,
-      title: "Study Post 1: This is a very long title that will be displayed in two lines",
+      title:
+        "Study Post 1: This is a very long title that will be displayed in two lines",
       category: "스터디",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-3",
@@ -175,7 +146,8 @@ const Main = () => {
     },
     {
       id: 2,
-      title: "Culture Post 1: Another example of a long title that needs to be truncated",
+      title:
+        "Culture Post 1: Another example of a long title that needs to be truncated",
       category: "문화",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-10",
@@ -235,7 +207,8 @@ const Main = () => {
     },
     {
       id: 7,
-      title: "Culture Post 2: A deep dive into the history and culture of the region",
+      title:
+        "Culture Post 2: A deep dive into the history and culture of the region",
       category: "문화",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-4",
@@ -259,17 +232,18 @@ const Main = () => {
     },
   ];
 
-  const filteredPosts = activeTab === "전체보기"
-    ? posts
-    : posts.filter(post => post.category === activeTab);
+  const filteredPosts =
+    activeTab === "전체보기"
+      ? posts
+      : posts.filter((post) => post.category === activeTab);
 
   const handlePostClick = (id) => {
     navigate(`/main/post/${id}`);
   };
 
-    const handleWriteClick = () => {
-        navigate("/post");
-    }
+  const handleWriteClick = () => {
+    navigate("/post");
+  };
 
   return (
     <Container>
@@ -293,27 +267,17 @@ const Main = () => {
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 
-      <PostList>
+      {error && <p>{error}</p>}
+
+      <ArticleList>
         {filteredPosts.map((post) => (
-          <Post key={post.id} onClick={() => handlePostClick(post.id)}>
-            <PostImage src={post.imageUrl} alt={post.title} />
-            <PostDetails>
-              <DDay>{post.dday}</DDay>
-              <LocationDetail>{post.location}</LocationDetail>
-            </PostDetails>
-            <Title>{post.title}</Title>
-            <Author>작성자: {post.author}</Author>
-            <Date>작성일: {post.date}</Date>
-            <PostFooter>
-              <Participants>인원: {post.participants}</Participants>
-              <Likes>
-                <HeartIcon>❤️</HeartIcon>
-                {post.likes}
-              </Likes>
-            </PostFooter>
-          </Post>
+          <Article
+            key={post.id}
+            post={post}
+            onClick={() => handlePostClick(post.id)}
+          />
         ))}
-      </PostList>
+      </ArticleList>
     </Container>
   );
 };
