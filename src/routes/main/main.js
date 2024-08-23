@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -55,14 +56,14 @@ const University = styled.div`
 
 const WriteButton = styled.button`
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #5E5CE6;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #218838;
+    background-color: #4D4BCF;
   }
 `;
 
@@ -152,6 +153,7 @@ const HeartIcon = styled.span`
 `;
 
 const Main = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("전체보기");
 
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
@@ -259,7 +261,11 @@ const Main = () => {
     ? posts
     : posts.filter(post => post.category === activeTab);
 
-  return (
+  const handleWriteClick = () => {
+    navigate('/post');
+  }
+
+    return (
     <Container>
       <Tabs>
         {tabs.map((tab) => (
@@ -278,7 +284,7 @@ const Main = () => {
           <Location>현재 위치: 서울</Location>
           <University>연결 가능 대학: 서울대학교</University>
         </Info>
-        <WriteButton>글쓰기</WriteButton>
+        <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 
       <PostList>

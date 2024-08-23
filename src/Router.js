@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Main from "./routes/main/main";
 import Layout from "./components/layout/layout";
+import Post from "./routes/write/Post";
+import MyPage from "./routes/profile/MyPage";
+import MyPageEdit from "./routes/profile/MyPageEdit";
 import Login from "./routes/login/login";
 
 const Router = createBrowserRouter([
@@ -9,12 +12,20 @@ const Router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "sharing",
-        element: <Main />,
+        path: "",
+        element: <Home />,
       },
       {
-        path: "socialing",
-        element: <Main />,
+        path: "/post",
+        element: <Post />,
+      },
+      {
+        path: "/mypage",
+        element: <MyPage />,
+      },
+      {
+        path: "/profile/edit",
+        element: <MyPageEdit />,
       },
       {
         path: "main",
