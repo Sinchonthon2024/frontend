@@ -18,7 +18,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "/post",
-        element: <Post />
+        element: <Post />,
       },
       {
         path: "/mypage",
@@ -27,6 +27,8 @@ const Router = createBrowserRouter([
       {
         path: "/profile/edit",
         element: <MyPageEdit />,
+      },
+      {
         path: "main",
         element: <Main />,
       },
