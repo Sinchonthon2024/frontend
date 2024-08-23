@@ -4,6 +4,7 @@ import LoginMap from "../../components/login/login-map";
 import { auth } from "../../firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { instance } from "../../api/instance";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -12,16 +13,12 @@ const Login = () => {
   const [inputUniv, setInputUniv] = useState("");
   const [univCheck, setUnivCheck] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
+  const [univDelayCheck, setUnivDelayCheck] = useState(false);
   const [codeCheck, setCodeCheck] = useState(false);
-  const [inputCode, setInputCode] = useState("");
-  const [googleName, setGoogleName] = useState("");
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  const [sendButtonText, setSendButtonText] = useState("인증번호 발송"); // State for button text
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
-
   useEffect(() => {
     // Debug location
     console.log("Current location:", location);
@@ -34,7 +31,7 @@ const Login = () => {
         email,
         uid,
       });
-      console.log(res);
+      localStorage.setItem("access_token", res.access_token);
     } catch (e) {
       console.error("Login error:", e);
     }
@@ -192,11 +189,16 @@ const Login = () => {
         setUnivCheck(false);
       });
   };
-
   return (
     <LoginContainer>
       <Title>로그인</Title>
-      <SocialButton onClick={onLogInClick}>구글 소셜 로그인</SocialButton>
+      <SocialButton onClick={onLogInClick}>
+        <img
+          style={{ width: "20px" }}
+          src="https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-512.png"
+        />
+        구글 소셜 로그인
+      </SocialButton>
       <DividerContainer>
         <DividerLine />
         <DividerText>또는</DividerText>
@@ -205,7 +207,7 @@ const Login = () => {
       <SignupLink>회원가입</SignupLink>
 
       <Label>닉네임</Label>
-      <FullWidthInput defaultValue={googleName} placeholder="" />
+      <FullWidthInput defaultValue={googleName} placeholder="닉네임" />
 
       <Label>자취 여부</Label>
       <ButtonGroup>
@@ -234,7 +236,8 @@ const Login = () => {
         <Input onChange={onUnivChange} placeholder="" />
         <SendButton onClick={onVerifyUnivClick}>대학교 확인</SendButton>
       </InlineGroup>
-      {univCheck && (
+      {univCheck && <LoadingGif src="https://i.gifer.com/ZC9Y.gif" alt="" />}
+      {univDelayCheck && (
         <UnivCertify>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -262,7 +265,7 @@ const Login = () => {
         <Input onChange={onCodeChange} placeholder="" />
         <VerifyButton onClick={onCodeClick}>인증</VerifyButton>
       </InlineGroup>
-      {emailVerified && codeCheck && (
+      {univCheck && (
         <UnivCertify className="code">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -276,13 +279,12 @@ const Login = () => {
         </UnivCertify>
       )}
       <Label>거주 지역</Label>
-      <FullWidthInput disabled value={location} />
+      <FullWidthInput disabled value={location} placeholder="거주 지역" />
       <LoginMap setLocation={setLocation} />
       <SubmitButton>회원가입</SubmitButton>
     </LoginContainer>
   );
 };
-
 const UnivCertify = styled.div`
   color: #4285f4;
   font-size: 12px;
@@ -297,7 +299,6 @@ const UnivCertify = styled.div`
     color: #28a745;
   }
 `;
-
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -310,16 +311,13 @@ const LoginContainer = styled.div`
 const Title = styled.h1`
   align-self: flex-start;
   margin-bottom: 24px;
-  font-size: 24px; /* Increased font size */
-  font-weight: bold; /* Bold font */
-  color: #000; /* Black color */
 `;
 
 const SocialButton = styled.button`
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
-  background-color: #5e5ce6; /* Updated background color */
+  background-color: #4285f4;
   color: white;
   border: none;
   border-radius: 5px;
@@ -347,9 +345,7 @@ const DividerText = styled.span`
 const SignupLink = styled.a`
   align-self: flex-start;
   margin-bottom: 24px;
-  font-size: 24px; /* Increased font size */
-  font-weight: bold; /* Bold font */
-  color: #000; /* Black color */
+  color: #4285f4;
   cursor: pointer;
 `;
 
@@ -364,20 +360,26 @@ const FullWidthInput = styled.input`
   width: 100%;
   padding: 12px;
   margin-bottom: 24px;
-  border: none; /* Removed border */
-  border-radius: 5px; /* Added border radius to match buttons */
-  background-color: #f5f5fa; /* Background color changed */
-  color: #000; /* Set text color to black for user input */
+  border: 1px solid #ccc;
+  border-radius: 5px;
   box-sizing: border-box;
+`;
+
+const FullWidthSelect = styled.select`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 24px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: white;
 `;
 
 const Input = styled.input`
   flex: 1;
   padding: 12px;
-  border: none; /* Removed border */
-  border-radius: 5px; /* Added border radius to match buttons */
-  background-color: #f5f5fa; /* Background color changed */
-  color: #000; /* Set text color to black for user input */
+  border: 1px solid #ccc;
+  border-radius: 5px;
   box-sizing: border-box;
 `;
 
@@ -392,14 +394,10 @@ const OptionButton = styled.button`
   flex: 1;
   padding: 12px;
   margin: 0 5px;
-  background-color: ${({ selected }) =>
-    selected
-      ? "#5e5ce6"
-      : "#f5f5fa"}; /* Updated background color based on selection */
-  color: ${({ selected }) =>
-    selected ? "white" : "#000"}; /* Color based on selection */
-  border: none; /* Removed border */
-  border-radius: 5px; /* Consistent border radius */
+  background-color: ${({ selected }) => (selected ? "#007bff" : "#f0f0f0")};
+  color: ${({ selected }) => (selected ? "white" : "#333")};
+  border: 1px solid #ccc;
+  border-radius: 5px;
   cursor: pointer;
 
   &:first-child {
@@ -415,16 +413,16 @@ const InlineGroup = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 12px; /* Reduced space between email and verification input rows */
+  margin-bottom: 12px; /* 이메일과 인증번호 입력 줄 사이의 여백을 줄임 */
 `;
 
 const SendButton = styled.button`
   flex-basis: 40%;
   padding: 12px;
   margin-left: 10px;
-  background-color: #5e5ce6; /* Updated background color */
+  background-color: #007bff;
   color: white;
-  border: none; /* Removed border */
+  border: none;
   border-radius: 5px;
   cursor: pointer;
 `;
@@ -433,9 +431,9 @@ const VerifyButton = styled.button`
   flex-basis: 40%;
   padding: 12px;
   margin-left: 10px;
-  background-color: #5e5ce6; /* Updated background color */
+  background-color: #28a745;
   color: white;
-  border: none; /* Removed border */
+  border: none;
   border-radius: 5px;
   cursor: pointer;
 `;
@@ -443,12 +441,11 @@ const VerifyButton = styled.button`
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
-  background-color: #5e5ce6; /* Updated background color */
+  background-color: #28a745;
   color: white;
-  border: none; /* Removed border */
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px; /* Added margin-top to create space above the button */
 `;
 
 export default Login;
