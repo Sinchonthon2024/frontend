@@ -10,11 +10,11 @@ const Header = () => {
   useEffect(() => {
     setPath(location.pathname.split("/")[1]);
     const p = location.pathname.split("/")[1];
-    if (p === "socialing") setLocPos(0);
+    if (p === "socialing" || p === "main") setLocPos(0);
     else if (p === "sharing") setLocPos(50);
   }, [location]);
   const onNaviClick = (e) => {
-    navigate(`/${e.target.id}`);
+    navigate(`${e.target.id}`);
   };
   return (
     <Wrapper>
@@ -27,7 +27,7 @@ const Header = () => {
       </div>
       <NaviTab>
         <NaviBox>
-          {path === "socialing" ? (
+          {path === "socialing" || path === "main" ? (
             <div
               id="socialing"
               style={{ color: "black", fontWeight: "800" }}
@@ -109,14 +109,6 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   padding: 12px 0;
-  background-color: var(--text4);
-  padding: 0 40px;
-  .right {
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    gap: 2rem;
-  }
 `;
 
 export default Header;
