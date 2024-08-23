@@ -36,11 +36,11 @@ const Login = () => {
   const fetchLogin = async (name, email, uid) => {
     try {
       const res = await instance.post(`api/auth/login`, {
-        name,
-        email,
-        uid,
+        name: auth?.currentUser.displayName,
+        email: auth?.currentUser.email,
+        uid: auth?.currentUser.uid,
       });
-      localStorage.setItem("access_token", res.access_token);
+      localStorage.setItem("access_token", res.data.access_token);
     } catch (e) {
       console.error(e);
     } finally {
@@ -325,7 +325,7 @@ const Login = () => {
       <Label>거주 지역</Label>
       <FullWidthInput disabled value={location} placeholder="거주 지역" />
       <LoginMap setLocation={setLocation} />
-      <SubmitButton>회원가입</SubmitButton>
+      <SubmitButton onClick={() => navigate("/main")}>회원가입</SubmitButton>
     </LoginContainer>
   );
 };
@@ -333,7 +333,7 @@ const LoadingGif = styled.img`
   width: 50px;
 `;
 const UnivCertify = styled.div`
-  color: #4285f4;
+  color: #5e5ce6;
   font-size: 12px;
   margin-bottom: 20px;
   display: flex;
@@ -396,7 +396,7 @@ const DividerText = styled.span`
 const SignupLink = styled.a`
   align-self: flex-start;
   margin-bottom: 24px;
-  color: #4285f4;
+  color: #5e5ce6;
   cursor: pointer;
 `;
 
@@ -445,7 +445,7 @@ const OptionButton = styled.button`
   flex: 1;
   padding: 12px;
   margin: 0 5px;
-  background-color: ${({ selected }) => (selected ? "#007bff" : "#f0f0f0")};
+  background-color: ${({ selected }) => (selected ? "#5E5CE6" : "#f0f0f0")};
   color: ${({ selected }) => (selected ? "white" : "#333")};
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -471,7 +471,7 @@ const SendButton = styled.button`
   flex-basis: 40%;
   padding: 12px;
   margin-left: 10px;
-  background-color: #007bff;
+  background-color: #5e5ce6;
   color: white;
   border: none;
   border-radius: 5px;

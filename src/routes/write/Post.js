@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import imageLogo from "../../assets/images/write/imageLogo.svg";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   max-width: 600px;
@@ -146,6 +147,7 @@ const SubmitButton = styled.button`
 `;
 
 function Post() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [title, setTitle] = useState("");
@@ -198,7 +200,7 @@ function Post() {
 
     try {
       const response = await axios.post(
-        "https://your-server-endpoint.com/api/posts",
+        "https://8mtbdhsm-8000.asse.devtunnels.ms/api/posts",
         formData,
         {
           headers: {
@@ -352,7 +354,7 @@ function Post() {
           onChange={(e) => setChatLink(e.target.value)}
         />
 
-        <SubmitButton type="submit">확인</SubmitButton>
+        <SubmitButton onClick={() => navigate('/main')} type="submit">확인</SubmitButton>
       </form>
     </Container>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import logo from "../../assets/images/logo.svg";
 
 const Header = () => {
   const location = useLocation();
@@ -59,7 +60,7 @@ const Header = () => {
   return (
     <Wrapper>
       <LeftContainer>
-        <Logo onClick={() => navigate("/")}>로고</Logo>
+        <Logo onClick={() => navigate("/")} />
         <SearchBox type="text" placeholder="검색어를 입력해 주세요." />
       </LeftContainer>
       <NaviTab>
@@ -146,7 +147,14 @@ const Navigator = styled.div`
     opacity 0.3s ease-in-out; /* Sliding and fade effects */
 `;
 
-const Logo = styled.div``;
+const Logo = styled.div`
+  background-image: url(${logo});
+  width: 120px; /* 적절한 로고 크기 설정 */
+  height: 40px; /* 적절한 로고 크기 설정 */
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+`;
 
 const SearchBox = styled.input`
   flex: 1;
