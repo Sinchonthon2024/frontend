@@ -1,48 +1,36 @@
 // src/routes/main/main.js
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import { instance } from "../../api/instance";
 const Container = styled.div`
   padding: 20px;
   padding-left: 40px;
   padding-right: 40px;
+  /* background-image: url("/sparkles.png");
+  background-size: cover;
+  width: 100%;
+  height: 100%; */
 `;
 
 const Tabs = styled.div`
   display: flex;
   justify-content: center;
-  padding: 25px 0;
   margin-bottom: 20px;
-  background-color: #e5e5ff;
-  position: relative;
 `;
 
 const Tab = styled.button`
   padding: 10px 20px;
   border: none;
   background: none;
-  color: ${({ active }) => (active ? "#5856D6" : "#000")};
+  color: ${({ active }) => (active ? "#007bff" : "#000")};
   cursor: pointer;
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  font-size: 18px;
-  position: relative;
+  border-bottom: ${({ active }) => (active ? "2px solid #007bff" : "none")};
   margin: 0 5px;
-  text-align: center;
 
   &:hover {
-    color: #5856d6;
+    color: #007bff;
   }
-`;
-
-const Navigator = styled.div`
-  position: absolute;
-  bottom: 25px; /* Adjust for text gap */
-  height: 2.5px;
-  background-color: #5856d6;
-  border-radius: 2px;
-  transition: left 0.3s ease-in-out, width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Sliding and fade effects */
-  opacity: 0; /* Initial opacity */
 `;
 
 const InfoBar = styled.div`
@@ -50,7 +38,7 @@ const InfoBar = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 50px 100px;
+  margin-bottom: 20px;
 `;
 
 const Info = styled.div`
@@ -62,24 +50,13 @@ const Info = styled.div`
 
 const Location = styled.div`
   font-size: 18px;
-  color: #000; /* Default text color */
-  margin-bottom: 5px; /* Add margin below the location text */
+  color: #555;
 `;
 
 const University = styled.div`
-  font-size: 18px; /* Matching font size with Location */
-  color: #000; /* Default text color */
-  margin-top: 5px; /* Add margin above the university text */
-`;
-
-const Label = styled.span`
-  color: #5e5ce6; /* Specific color for labels */
-  letter-spacing: 2px; /* Increased letter spacing */
-`;
-
-const Text = styled.span`
-  color: #000; /* Specific color for text */
-  letter-spacing: 2px; /* Increased letter spacing */
+  font-size: 16px;
+  color: #007bff;
+  margin-top: 5px;
 `;
 
 const WriteButton = styled.button`
@@ -95,21 +72,119 @@ const WriteButton = styled.button`
   }
 `;
 
-const ArticleList = styled.div`
+const PostList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
-  margin: 0 100px;
+`;
+
+const Post = styled.div`
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+`;
+
+const PostImage = styled.img`
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+`;
+
+const PostDetails = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const DDay = styled.div`
+  color: #fff;
+  background-color: #ff4757;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+`;
+
+const LocationDetail = styled.div`
+  color: #555;
+`;
+
+const Title = styled.h3`
+  font-size: 18px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Author = styled.div`
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+`;
+
+const Date = styled.div`
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+`;
+
+const PostFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Participants = styled.div`
+  font-size: 12px;
+  color: #555;
+`;
+
+const Likes = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+`;
+
+const HeartIcon = styled.span`
+  color: #ff4757;
+  margin-right: 5px;
 `;
 
 const Main = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("전체보기");
-
+  const [posts, setPosts] = useState();
+  const [filteredPosts, setFilteredPosts] = useState();
+  const [naviLocation, setNaviLocation] = useState();
   const tabs = ["전체보기", "스터디", "문화", "취미", "여행", "음식"];
-  
-  const posts = [
+  useEffect(() => {
+    const pathname = location.pathname.split("/")[1];
+    setNaviLocation(pathname);
+    const fetchData = async () => {
+      try {
+        const res = await instance.post(`api/auth/login`, {
+          name: "별별",
+          email: "byul88byul@gmail.com",
+          uid: "3jljlkjflkjklafjljl3j2lj3",
+        });
+        console.log(res);
+      } catch (e) {
+        console.error(e);
+      } finally {
+      }
+    };
+    fetchData();
+  }, [location, posts]);
+  const testPosts = [
     {
       id: 1,
       title:
@@ -186,7 +261,8 @@ const Main = () => {
     },
     {
       id: 7,
-      title: "Culture Post 2: A deep dive into the history and culture of the region",
+      title:
+        "Culture Post 2: A deep dive into the history and culture of the region",
       category: "문화",
       imageUrl: "https://via.placeholder.com/150",
       dday: "D-4",
@@ -210,10 +286,13 @@ const Main = () => {
     },
   ];
 
-  const filteredPosts = activeTab === "전체보기"
-    ? posts
-    : posts.filter(post => post.category === activeTab);
-
+  useEffect(() => {
+    const filtered =
+      activeTab === "전체보기"
+        ? posts
+        : posts.filter((post) => post.category === activeTab);
+    setFilteredPosts(filtered);
+  }, [posts]);
   const handlePostClick = (id) => {
     navigate(`/main/post/${id}`);
   };
@@ -225,33 +304,27 @@ const Main = () => {
   return (
     <Container>
       <Tabs>
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <Tab
             key={tab}
             active={tab === activeTab}
             onClick={() => setActiveTab(tab)}
-            ref={(el) => (tabsRef.current[index] = el)}
           >
             {tab}
           </Tab>
         ))}
-        <Navigator style={navigatorStyle} />
       </Tabs>
 
       <InfoBar>
         <Info>
-          <Location>
-            <Label>현재 위치 |</Label> <Text>서울</Text>
-          </Location>
-          <University>
-            <Label>연결 가능 대학 |</Label> <Text>서울대학교</Text>
-          </University>
+          <Location>현재 위치: 서울</Location>
+          <University>연결 가능 대학: 서울대학교</University>
         </Info>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
       </InfoBar>
 
       <PostList>
-        {filteredPosts.map((post) => (
+        {filteredPosts?.map((post) => (
           <Post key={post.id} onClick={() => handlePostClick(post.id)}>
             <PostImage src={post.imageUrl} alt={post.title} />
             <PostDetails>
@@ -270,7 +343,7 @@ const Main = () => {
             </PostFooter>
           </Post>
         ))}
-      </ArticleList>
+      </PostList>
     </Container>
   );
 };
