@@ -11,6 +11,14 @@ const Router = createBrowserRouter([
         path: "",
         element: <Home />,
       },
+      {
+        path: "sharing",
+        element: <Home />,
+      },
+      {
+        path: "socialing",
+        element: <Home />,
+      },
     ],
   },
 ]);
