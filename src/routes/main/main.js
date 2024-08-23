@@ -170,7 +170,7 @@ const Main = () => {
   const posts = [
     {
       id: 1,
-      title: "글 제목 더미 텍스트입니다 글 제목 더미텍스트입니다 글 제목 더미",
+      title: "영화 관람 하실분~",
       category: "스터디",
       imageUrl: img1,
       dday: "D-3",
