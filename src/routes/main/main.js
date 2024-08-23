@@ -102,6 +102,7 @@ const ArticleList = styled.div`
 
 const Main = () => {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("전체보기");
   const [navigatorStyle, setNavigatorStyle] = useState({
@@ -154,7 +155,6 @@ const Main = () => {
   //       if (err.response && err.response.status === 400) {
   //       } else {
   //         setError(err.response.data.detail);
-  // 더미 데이터
   // }, []);
   //   fetchPosts();
 
@@ -162,58 +162,101 @@ const Main = () => {
   //     }
   //         setError("게시물을 불러오는 중 오류가 발생했습니다.");
   //       }
-  const posts = [
-    {
-      id: 1,
-      title:
-        "Study Post 1: This is a very long title that will be displayed in two lines",
-      category: "스터디",
-      imageUrl: "https://via.placeholder.com/150",
-      dday: "D-3",
-      location: "Seoul",
-      author: "User1",
-      date: "2024-08-20",
-      participants: "5/10",
-      likes: 23,
-    },
-    {
-      id: 2,
-      title:
-        "Culture Post 1: Another example of a long title that needs to be truncated",
-      category: "문화",
-      imageUrl: "https://via.placeholder.com/150",
-      dday: "D-10",
-      location: "Busan",
-      author: "User2",
-      date: "2024-08-18",
-      participants: "7/15",
-      likes: 15,
-    },
-    {
-      id: 3,
-      title: "Hobby Post 1: Short and sweet title for a hobby post",
-      category: "취미",
-      imageUrl: "https://via.placeholder.com/150",
-      dday: "D-5",
-      location: "Incheon",
-      author: "User3",
-      date: "2024-08-22",
-      participants: "2/5",
-      likes: 8,
-    },
-    {
-      id: 4,
-      title: "Travel Post 1: Exploring the wonders of the world",
-      category: "여행",
-      imageUrl: "https://via.placeholder.com/150",
-      dday: "D-2",
-      location: "Jeju",
-      author: "User4",
-      date: "2024-08-19",
-      participants: "10/10",
-      likes: 45,
-    },
-  ];
+  // const posts = [
+  //   {
+  //     id: 1,
+  //     title:
+  //       "Study Post 1: This is a very long title that will be displayed in two lines",
+  //     category: "스터디",
+  //     imageUrl: "https://via.placeholder.com/150",
+  //     dday: "D-3",
+  //     location: "Seoul",
+  //     author: "User1",
+  //     date: "2024-08-20",
+  //     participants: "5/10",
+  //     likes: 23,
+  //   },
+  //   {
+  //     id: 2,
+  //     title:
+  //       "Culture Post 1: Another example of a long title that needs to be truncated",
+  //     category: "문화",
+  //     imageUrl: "https://via.placeholder.com/150",
+  //     dday: "D-10",
+  //     location: "Busan",
+  //     author: "User2",
+  //     date: "2024-08-18",
+  //     participants: "7/15",
+  //     likes: 15,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Hobby Post 1: Short and sweet title for a hobby post",
+  //     category: "취미",
+  //     imageUrl: "https://via.placeholder.com/150",
+  //     dday: "D-5",
+  //     location: "Incheon",
+  //     author: "User3",
+  //     date: "2024-08-22",
+  //     participants: "2/5",
+  //     likes: 8,
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Travel Post 1: Exploring the wonders of the world",
+  //     category: "여행",
+  //     imageUrl: "https://via.placeholder.com/150",
+  //     dday: "D-2",
+  //     location: "Jeju",
+  //     author: "User4",
+  //     date: "2024-08-19",
+  //     participants: "10/10",
+  //     likes: 45,
+  //   },
+  // ];
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const accessToken = localStorage.getItem("access_token");
+
+        if (!accessToken) {
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const response = await axios.get("https://your-api-endpoint.com/api/posts", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const fetchedPosts = response.data.map((item) => ({
+          id: item.id,
+          title: item.post.title,
+          category: item.post.category,
+          imageUrl: item.post.image,
+          dday: `D-${Math.ceil(
+            (new Date(item.post.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+          )}`,
+          location: item.post.detail,
+          author: item.user_name,
+          date: item.date,
+          participants: `0/${item.post.limit}`, // 예시로 설정한 인원 정보, 실제 데이터에 맞게 수정 필요
+          likes: 0, // 예시로 설정한 좋아요 수, 실제 데이터에 맞게 수정 필요
+        }));
+
+        setPosts(fetchedPosts);
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          setError(err.response.data.detail);
+        } else {
+          setError("게시물을 불러오는 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const updateNavigatorPosition = () => {
     const currentTab = tabsRef.current.find(

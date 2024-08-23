@@ -50,6 +50,10 @@ const Header = () => {
     navigate(`/${e.target.id}`);
   };
 
+  const handleMyPageClick = () => {
+    navigate('/mypage');
+  }
+
   return (
     <Wrapper>
       <LeftContainer>
@@ -83,7 +87,7 @@ const Header = () => {
           />
         </NaviBox>
       </NaviTab>
-      <MenuTab>
+      <MenuTab onClick={handleMyPageClick}>
         <div>마이페이지</div>
       </MenuTab>
     </Wrapper>
