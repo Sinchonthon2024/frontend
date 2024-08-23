@@ -13,6 +13,10 @@ const Router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
+        path: "/",
+        element: <Main />,
+      },
+      {
         path: "/post",
         element: <Post />,
       },
@@ -35,6 +39,14 @@ const Router = createBrowserRouter([
       {
         path: "main/post/:id",
         element: <PostDetail />,
+      },
+      {
+        path: "sharing",
+        element: <Main />,
+      },
+      {
+        path: "socialing",
+        element: <Main />,
       },
     ],
   },

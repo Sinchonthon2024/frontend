@@ -1,99 +1,162 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [locPos, setLocPos] = useState(0);
   const [path, setPath] = useState("socialing");
-  useEffect(() => {
-    setPath(location.pathname.split("/")[1]);
+  const [navigatorStyle, setNavigatorStyle] = useState({
+    width: 0,
+    left: 0,
+    opacity: 0,
+  });
+  const tabsRef = useRef([]);
+
+  const updateNavigatorPosition = () => {
     const p = location.pathname.split("/")[1];
-    if (p === "socialing" || p === "main") setLocPos(0);
-    else if (p === "sharing") setLocPos(50);
-  }, [location]);
-  const onNaviClick = (e) => {
-    navigate(`${e.target.id}`);
+    setPath(p);
+
+    const currentTab = tabsRef.current.find(
+      (tab) => tab.textContent === (p === "socialing" || p === "main" ? "소셜링" : "나눔")
+    );
+
+    if (currentTab) {
+      const navigatorWidth = currentTab.offsetWidth * 0.8; // Width 80% of the tab
+      const navigatorLeft =
+        currentTab.offsetLeft + (currentTab.offsetWidth - navigatorWidth) / 2; // Center align
+
+      setNavigatorStyle({
+        width: navigatorWidth,
+        left: navigatorLeft,
+        opacity: 1, // Ensure navigator is visible after calculation
+      });
+    }
   };
+
+  useEffect(() => {
+    updateNavigatorPosition();
+
+    // Add resize event listener
+    window.addEventListener("resize", updateNavigatorPosition);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", updateNavigatorPosition);
+    };
+  }, [location]);
+
+  const onNaviClick = (e) => {
+    navigate(`/${e.target.id}`);
+  };
+
   return (
     <Wrapper>
-      <div className="right">
+      <LeftContainer>
         <Logo>로고</Logo>
-        <SearchBox
-          type="text"
-          placeholder="검색어를 입력해 주세요."
-        ></SearchBox>
-      </div>
+        <SearchBox type="text" placeholder="검색어를 입력해 주세요." />
+      </LeftContainer>
       <NaviTab>
         <NaviBox>
-          {path === "socialing" || path === "main" ? (
-            <div
-              id="socialing"
-              style={{ color: "black", fontWeight: "800" }}
-              onClick={onNaviClick}
-            >
-              소셜링
-            </div>
-          ) : (
-            <div id="socialing" onClick={onNaviClick}>
-              소셜링
-            </div>
-          )}
-          {path === "sharing" ? (
-            <div
-              id="sharing"
-              style={{ color: "black", fontWeight: "800" }}
-              onClick={onNaviClick}
-            >
-              나눔
-            </div>
-          ) : (
-            <div id="sharing" onClick={onNaviClick}>
-              나눔
-            </div>
-          )}
-          <Navigator locpos={locPos}></Navigator>
+          <NaviItem
+            id="socialing"
+            active={path === "socialing" || path === "main"}
+            onClick={onNaviClick}
+            ref={(el) => (tabsRef.current[0] = el)}
+          >
+            소셜링
+          </NaviItem>
+          <NaviItem
+            id="sharing"
+            active={path === "sharing"}
+            onClick={onNaviClick}
+            ref={(el) => (tabsRef.current[1] = el)}
+          >
+            나눔
+          </NaviItem>
+          <Navigator
+            style={{
+              width: `${navigatorStyle.width}px`,
+              left: `${navigatorStyle.left}px`,
+              opacity: navigatorStyle.opacity, // Apply fade-in/out based on state
+            }}
+          />
         </NaviBox>
       </NaviTab>
       <MenuTab>
         <div>마이페이지</div>
-        <div>문의</div>
       </MenuTab>
     </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  width: 100%;
+  height: auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  padding: 24px 100px; /* Padding: 24px vertical, 48px horizontal */
+  background-color: #f5f5ff;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* Increased gap between logo and search box */
+`;
+
 const NaviBox = styled.div`
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 100%;
-  width: 100px;
-  div {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const NaviItem = styled.button`
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: ${({ active }) => (active ? "#5856D6" : "#000")};
+  cursor: pointer;
+  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  font-size: 18px;
+  position: relative;
+  margin: 0 5px;
+  text-align: center;
+
+  &:hover {
+    color: #5856d6;
   }
 `;
+
 const Navigator = styled.div`
   position: absolute;
-  bottom: 0.5rem;
-  height: 3px;
-  background-color: black;
-  width: 50px;
-  left: ${(props) => props.locpos}px;
-  transition: left 0.3s ease-in;
+  bottom: 3px; /* Adjusted for text gap */
+  height: 2.5px;
+  background-color: #5856d6;
+  border-radius: 2px;
+  opacity: 0; /* Initial opacity */
+  transition: left 0.3s ease-in-out, width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Sliding and fade effects */
 `;
+
 const Logo = styled.div``;
-const SearchBox = styled.input``;
+
+const SearchBox = styled.input`
+  flex: 1;
+  max-width: 300px;
+  border: none;
+  outline: none;
+  background-color: white;
+  padding: 12px 16px;
+  border-radius: 4px;
+`;
+
 const NaviTab = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
 `;
+
 const MenuTab = styled.div`
   display: flex;
   justify-content: end;
@@ -102,13 +165,6 @@ const MenuTab = styled.div`
   div {
     cursor: pointer;
   }
-`;
-const Wrapper = styled.div`
-  width: 100%;
-  height: 64px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding: 12px 0;
 `;
 
 export default Header;
